@@ -1,6 +1,6 @@
 // UIView+OCMode.m
 //
-// Copyright (c) 2013 ZUO
+// Copyright (c) 2013 Tang Tianyong
 //
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation

@@ -1,6 +1,6 @@
 // UIView+OCMode.h
 //
-// Copyright (c) 2013 ZUO
+// Copyright (c) 2013 Tang Tianyong
 //
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
@@ -27,50 +27,50 @@
 
 @interface UIView (OCMode)
 
-@property (nonatomic, assign) CGFloat centerX; //
-@property (nonatomic, assign) CGFloat centerY; //
+@property (nonatomic, assign) CGFloat centerX;
+@property (nonatomic, assign) CGFloat centerY;
 
-@property (nonatomic, assign) CGFloat offsetCenterX; //
-@property (nonatomic, assign) CGFloat offsetCenterY; //
-@property (nonatomic, assign) CGPoint offsetCenter; //
+@property (nonatomic, assign) CGFloat offsetCenterX;
+@property (nonatomic, assign) CGFloat offsetCenterY;
+@property (nonatomic, assign) CGPoint offsetCenter;
 
-- (instancetype)centerX:(CGFloat)centerX; //
-- (instancetype)centerY:(CGFloat)centerY; //
-- (instancetype)center:(CGPoint)center; //
+- (instancetype)centerX:(CGFloat)centerX;
+- (instancetype)centerY:(CGFloat)centerY;
+- (instancetype)center:(CGPoint)center;
 
-- (instancetype)offsetCenterX:(CGFloat)offsetCenterX; //
-- (instancetype)offsetCenterY:(CGFloat)offsetCenterY; //
-- (instancetype)offsetCenter:(CGPoint)offsetCenter; //
+- (instancetype)offsetCenterX:(CGFloat)offsetCenterX;
+- (instancetype)offsetCenterY:(CGFloat)offsetCenterY;
+- (instancetype)offsetCenter:(CGPoint)offsetCenter;
 
-@property (nonatomic, assign) CGFloat width; //
-@property (nonatomic, assign) CGFloat height; //
-@property (nonatomic, assign) CGSize size; //
+@property (nonatomic, assign) CGFloat width;
+@property (nonatomic, assign) CGFloat height;
+@property (nonatomic, assign) CGSize size;
 
-@property (nonatomic, assign) CGFloat offsetWidth; //
-@property (nonatomic, assign) CGFloat offsetHeight; //
-@property (nonatomic, assign) CGSize offsetSize; //
+@property (nonatomic, assign) CGFloat offsetWidth;
+@property (nonatomic, assign) CGFloat offsetHeight;
+@property (nonatomic, assign) CGSize offsetSize;
 
-- (instancetype)width:(CGFloat)width; //
-- (instancetype)height:(CGFloat)height; //
-- (instancetype)size:(CGSize)size; //
+- (instancetype)width:(CGFloat)width;
+- (instancetype)height:(CGFloat)height;
+- (instancetype)size:(CGSize)size;
 
-- (instancetype)offsetWidth:(CGFloat)offsetWidth; //
-- (instancetype)offsetHeight:(CGFloat)offsetHeight; //
-- (instancetype)offsetSize:(CGSize)offsetSize; //
+- (instancetype)offsetWidth:(CGFloat)offsetWidth;
+- (instancetype)offsetHeight:(CGFloat)offsetHeight;
+- (instancetype)offsetSize:(CGSize)offsetSize;
 
-@property (nonatomic, assign) CGFloat x; //
-@property (nonatomic, assign) CGFloat y; //
-@property (nonatomic, assign, getter = x, setter = setX:) CGFloat left; //
-@property (nonatomic, assign, getter = y, setter = setY:) CGFloat top; //
-@property (nonatomic, assign, getter = x, setter = setX:) CGFloat originX; //
-@property (nonatomic, assign, getter = y, setter = setY:) CGFloat originY; //
-@property (nonatomic, assign) CGPoint origin; //
+@property (nonatomic, assign) CGFloat x;
+@property (nonatomic, assign) CGFloat y;
+@property (nonatomic, assign, getter = x, setter = setX:) CGFloat left;
+@property (nonatomic, assign, getter = y, setter = setY:) CGFloat top;
+@property (nonatomic, assign, getter = x, setter = setX:) CGFloat originX;
+@property (nonatomic, assign, getter = y, setter = setY:) CGFloat originY;
+@property (nonatomic, assign) CGPoint origin;
 
-@property (nonatomic, assign) CGFloat offsetX; //
-@property (nonatomic, assign) CGFloat offsetY; //
-@property (nonatomic, assign, getter = offsetX, setter = setOffsetX:) CGFloat offsetLeft; //
-@property (nonatomic, assign, getter = offsetY, setter = setOffsetY:) CGFloat offsetTop; //
-@property (nonatomic, assign) CGPoint offsetOrigin; //
+@property (nonatomic, assign) CGFloat offsetX;
+@property (nonatomic, assign) CGFloat offsetY;
+@property (nonatomic, assign, getter = offsetX, setter = setOffsetX:) CGFloat offsetLeft;
+@property (nonatomic, assign, getter = offsetY, setter = setOffsetY:) CGFloat offsetTop;
+@property (nonatomic, assign) CGPoint offsetOrigin;
 
 - (instancetype)x:(CGFloat)x;
 - (instancetype)y:(CGFloat)y;
