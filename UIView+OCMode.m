@@ -214,6 +214,42 @@
     self.y = origin.y;
 }
 
+- (CGFloat)right {
+    return self.left + self.width;
+}
+
+- (void)setRight:(CGFloat)right {
+    self.left = right - self.width;
+}
+
+- (CGFloat)bottom {
+    return self.top + self.height;
+}
+
+- (void)setBottom:(CGFloat)bottom {
+    self.top = bottom - self.height;
+}
+
+- (CGFloat)rightToSuperView {
+    return self.superview ? self.superview.width - self.right : 0.0f;
+}
+
+- (void)setRightToSuperView:(CGFloat)rightToSuperView {
+    if (self.superview) {
+        self.right = self.superview.width - rightToSuperView;
+    }
+}
+
+- (CGFloat)bottomToSuperView {
+    return self.superview ? self.superview.height - self.bottom : 0.0f;
+}
+
+- (void)setBottomToSuperView:(CGFloat)bottomToSuperView {
+    if (self.superview) {
+        self.bottom = self.superview.height - bottomToSuperView;
+    }
+}
+
 - (CGFloat)offsetX {
     return 0.0f;
 }
@@ -267,6 +303,26 @@
 
 - (instancetype)origin:(CGPoint)origin {
     self.origin = origin;
+    return self;
+}
+
+- (instancetype)right:(CGFloat)right {
+    self.right = right;
+    return self;
+}
+
+- (instancetype)bottom:(CGFloat)bottom {
+    self.bottom = bottom;
+    return self;
+}
+
+- (instancetype)rightToSuper:(CGFloat)rightToSuperView {
+    self.rightToSuperView = rightToSuperView;
+    return self;
+}
+
+- (instancetype)bottomToSuper:(CGFloat)bottomToSuperView {
+    self.bottomToSuperView = bottomToSuperView;
     return self;
 }
 

@@ -66,6 +66,11 @@
 @property (nonatomic, assign, getter = y, setter = setY:) CGFloat originY;
 @property (nonatomic, assign) CGPoint origin;
 
+@property (nonatomic, assign) CGFloat right;
+@property (nonatomic, assign) CGFloat bottom;
+@property (nonatomic, assign) CGFloat rightToSuperView;
+@property (nonatomic, assign) CGFloat bottomToSuperView;
+
 @property (nonatomic, assign) CGFloat offsetX;
 @property (nonatomic, assign) CGFloat offsetY;
 @property (nonatomic, assign, getter = offsetX, setter = setOffsetX:) CGFloat offsetLeft;
@@ -79,6 +84,11 @@
 - (instancetype)originX:(CGFloat)originX;
 - (instancetype)originY:(CGFloat)originY;
 - (instancetype)origin:(CGPoint)origin;
+
+- (instancetype)right:(CGFloat)right;
+- (instancetype)bottom:(CGFloat)bottom;
+- (instancetype)rightToSuper:(CGFloat)rightToSuperView;
+- (instancetype)bottomToSuper:(CGFloat)bottomToSuperView;
 
 - (instancetype)offsetX:(CGFloat)offsetX;
 - (instancetype)offsetY:(CGFloat)offsetY;
