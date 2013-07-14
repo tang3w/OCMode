@@ -393,4 +393,9 @@
     return CGPointMake(self.width / 2.0f, self.height / 2.0f);
 }
 
+- (instancetype)appendTo:(UIView *)superView {
+    [superView addSubview:self];
+    return self;
+}
+
 @end

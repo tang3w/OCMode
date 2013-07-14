@@ -106,4 +106,6 @@
 
 @property (nonatomic, assign, readonly) CGPoint midPoint;
 
+- (instancetype)appendTo:(UIView *)superView;
+
 @end
