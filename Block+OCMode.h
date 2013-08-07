@@ -1,4 +1,4 @@
-// NSObject+OCMode.h
+// Block+OCMode.h
 //
 // Copyright (c) 2013 Tang Tianyong
 //
@@ -23,12 +23,5 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
 
-@interface NSObject (OCMode)
-
-- (Class)eigenclass;
-- (Class)createEigenclassByName:(NSString *)name;
-- (instancetype)addEigenMethod:(SEL)selector byBlock:(id)block;
-
-@end
+const char *blockSignature(id aBlock);

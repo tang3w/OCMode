@@ -25,6 +25,7 @@
 
 #import "NSObject+OCMode.h"
 #import <objc/runtime.h>
+#import "Block+OCMode.h"
 
 static void *const EIGENCLASS_ASSOC_KEY;
 
@@ -64,6 +65,14 @@ static Class imp_class(id self, SEL _cmd) {
     objc_setAssociatedObject(self, EIGENCLASS_ASSOC_KEY, eigenclass, OBJC_ASSOCIATION_ASSIGN);
     
     return eigenclass;
+}
+
+- (instancetype)addEigenMethod:(SEL)selector byBlock:(id)block {
+    if ([self eigenclass] != Nil) {
+        class_addMethod([self eigenclass], selector, imp_implementationWithBlock(block), blockSignature(block));
+    }
+    
+    return self;
 }
 
 @end
