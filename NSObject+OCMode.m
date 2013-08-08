@@ -69,7 +69,11 @@ static Class imp_class(id self, SEL _cmd) {
 
 - (instancetype)addEigenMethod:(SEL)selector byBlock:(id)block {
     if ([self eigenclass] != Nil) {
-        class_addMethod([self eigenclass], selector, imp_implementationWithBlock(block), blockSignature(block));
+        const char *sig = blockSignature(block);
+        if (sig != NULL) {
+            [block copy];
+            class_addMethod([self eigenclass], selector, imp_implementationWithBlock(block), sig);
+        }
     }
     
     return self;
