@@ -51,7 +51,7 @@ typedef enum {
 } Block_description_flag;
 
 const char *blockSignature(id aBlock) {
-    struct Block_literal_1 *block = (struct Block_literal_1 *)aBlock;
+    struct Block_literal_1 *block = (__bridge struct Block_literal_1 *)aBlock;
     Block_description_flag flag = block->flags;
     
     if (flag & BLOCK_HAS_SIGNATURE) {

@@ -45,26 +45,31 @@ static Class imp_class(id self, SEL _cmd) {
     return objc_getAssociatedObject(self, EIGENCLASS_ASSOC_KEY);
 }
 
-- (Class)createEigenclassByName:(NSString *)name {
-    if (NSClassFromString(name) != Nil) {
-        return Nil;
-    }
+- (instancetype)extendInstance:(tExtendInstanceBlock)handler {
+    static unsigned long long suffix = 0;
     
     Class cls = [self class];
-    Class eigenclass = objc_allocateClassPair(cls, [name UTF8String], 0);
+    const char *name = [[NSString stringWithFormat:@"%s#%llu", class_getName(cls), ++suffix] UTF8String];
     
-    if (eigenclass != Nil) {
+    Class eigenclass = Nil;
+    
+    if (objc_getClass(name) == nil) {
+        eigenclass = objc_allocateClassPair(object_getClass(self), name, 0);
         
-        Method m = class_getInstanceMethod(cls, @selector(class));
-        class_addMethod(eigenclass, @selector(class), (IMP)imp_class, method_getTypeEncoding(m));
-        
-        objc_registerClassPair(eigenclass);
-        object_setClass(self, eigenclass);
+        if (eigenclass != Nil) {
+            Method m = class_getInstanceMethod(cls, @selector(class));
+            class_addMethod(eigenclass, @selector(class), (IMP)imp_class, method_getTypeEncoding(m));
+            
+            objc_registerClassPair(eigenclass);
+            object_setClass(self, eigenclass);
+        }
     }
     
     objc_setAssociatedObject(self, EIGENCLASS_ASSOC_KEY, eigenclass, OBJC_ASSOCIATION_ASSIGN);
     
-    return eigenclass;
+    handler(self, eigenclass);
+    
+    return self;
 }
 
 - (instancetype)addEigenMethod:(SEL)selector byBlock:(id)block {

@@ -25,10 +25,12 @@
 
 #import <Foundation/Foundation.h>
 
+typedef void(^tExtendInstanceBlock)(id receiver, id eigenclass);
+
 @interface NSObject (OCMode)
 
 - (Class)eigenclass;
-- (Class)createEigenclassByName:(NSString *)name;
+- (instancetype)extendInstance:(tExtendInstanceBlock)handler;
 - (instancetype)addEigenMethod:(SEL)selector byBlock:(id)block;
 
 @end
