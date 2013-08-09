@@ -34,6 +34,8 @@
             [system layoutSubviews:receiver];
         }];
     }];
+    
+    [self setNeedsLayout];
 }
 
 - (void)addLayoutSystem:(id<OCModeLayoutDelegate>)system {
@@ -49,6 +51,8 @@
             [system layoutSubviews:receiver];
         }];
     }];
+    
+    [self setNeedsLayout];
 }
 
 @end
