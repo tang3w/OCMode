@@ -67,6 +67,78 @@ static void *RELATIONSHIPS_ASSOC_KEY;
     return [[self alloc] init];
 }
 
++ (id)layoutSystemAddToView:(UIView *)view {
+    OCModeLayoutSystem *ls = [self layoutSystem];
+    [view addLayoutSystem:ls];
+    return ls;
+}
+
++ (id)layoutSystemUseToView:(UIView *)view {
+    OCModeLayoutSystem *ls = [self layoutSystem];
+    [view useLayoutSystem:ls];
+    return ls;
+}
+
+- (instancetype)addToView:(UIView *)view {
+    [view addLayoutSystem:self];
+    
+    return self;
+}
+
+- (instancetype)useToView:(UIView *)view {
+    [view useLayoutSystem:self];
+    
+    return self;
+}
+
+- (instancetype)keepView:(UIView *)view of:(OCModeLayoutKeepType)type to:(OCModeReferencePoint)block {
+    static unsigned long priority = 0;
+    ++priority;
+    
+    NSMutableDictionary *relationships = objc_getAssociatedObject(view, RELATIONSHIPS_ASSOC_KEY);
+    
+    if (relationships == nil) {
+        relationships = [[NSMutableDictionary alloc] init];
+        objc_setAssociatedObject(view, RELATIONSHIPS_ASSOC_KEY, relationships, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+    
+    [block copy];
+    
+    if (type & OCModeLayoutKeepTop) {
+        relationships[@(OCModeLayoutKeepTop)] = @{
+            @"view":view, @"of":@(OCModeLayoutKeepTop), @"to":block, @"priority":@(priority)
+        };
+    }
+    
+    if (type & OCModeLayoutKeepLeft) {
+        relationships[@(OCModeLayoutKeepLeft)] = @{
+            @"view":view, @"of":@(OCModeLayoutKeepLeft), @"to":block, @"priority":@(priority)
+        };
+    }
+    
+    if (type & OCModeLayoutKeepRight) {
+        relationships[@(OCModeLayoutKeepRight)] = @{
+            @"view":view, @"of":@(OCModeLayoutKeepRight), @"to":block, @"priority":@(priority)
+        };
+    }
+    
+    if (type & OCModeLayoutKeepBottom) {
+        relationships[@(OCModeLayoutKeepBottom)] = @{
+            @"view":view, @"of":@(OCModeLayoutKeepBottom), @"to":block, @"priority":@(priority)
+        };
+    }
+    
+    return self;
+}
+
+- (instancetype)keepViews:(NSArray *)views of:(OCModeLayoutKeepType)type to:(OCModeReferencePoint)block {
+    for (UIView *view in views) {
+        [self keepView:view of:type to:block];
+    }
+    
+    return self;
+}
+
 - (void)layoutSubviews:(UIView *)receiver {
     NSMutableArray *allRelationships = [[NSMutableArray alloc] init];
     
@@ -125,46 +197,6 @@ static void *RELATIONSHIPS_ASSOC_KEY;
             default: break;
         }
     }
-}
-
-- (instancetype)keepView:(UIView *)view of:(OCModeLayoutKeepType)type to:(OCModeReferencePoint)block {
-    static unsigned long priority = 0;
-    ++priority;
-    
-    NSMutableDictionary *relationships = objc_getAssociatedObject(view, RELATIONSHIPS_ASSOC_KEY);
-    
-    if (relationships == nil) {
-        relationships = [[NSMutableDictionary alloc] init];
-        objc_setAssociatedObject(view, RELATIONSHIPS_ASSOC_KEY, relationships, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    }
-    
-    [block copy];
-    
-    if (type & OCModeLayoutKeepTop) {
-        relationships[@(OCModeLayoutKeepTop)] = @{
-            @"view":view, @"of":@(OCModeLayoutKeepTop), @"to":block, @"priority":@(priority)
-        };
-    }
-    
-    if (type & OCModeLayoutKeepLeft) {
-        relationships[@(OCModeLayoutKeepLeft)] = @{
-            @"view":view, @"of":@(OCModeLayoutKeepLeft), @"to":block, @"priority":@(priority)
-        };
-    }
-    
-    if (type & OCModeLayoutKeepRight) {
-        relationships[@(OCModeLayoutKeepRight)] = @{
-            @"view":view, @"of":@(OCModeLayoutKeepRight), @"to":block, @"priority":@(priority)
-        };
-    }
-    
-    if (type & OCModeLayoutKeepBottom) {
-        relationships[@(OCModeLayoutKeepBottom)] = @{
-            @"view":view, @"of":@(OCModeLayoutKeepBottom), @"to":block, @"priority":@(priority)
-        };
-    }
-    
-    return self;
 }
 
 @end

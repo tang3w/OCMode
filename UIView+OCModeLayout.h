@@ -56,7 +56,12 @@ typedef enum {
 @interface OCModeLayoutSystem : NSObject <OCModeLayoutDelegate>
 
 + (id)layoutSystem;
++ (id)layoutSystemAddToView:(UIView *)view;
++ (id)layoutSystemUseToView:(UIView *)view;
 
+- (instancetype)addToView:(UIView *)view;
+- (instancetype)useToView:(UIView *)view;
 - (instancetype)keepView:(UIView *)view of:(OCModeLayoutKeepType)type to:(OCModeReferencePoint)block;
+- (instancetype)keepViews:(NSArray *)views of:(OCModeLayoutKeepType)type to:(OCModeReferencePoint)block;
 
 @end
