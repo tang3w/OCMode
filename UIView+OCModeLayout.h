@@ -39,19 +39,19 @@
 
 @end
 
-typedef CGPoint(^OCModeReferencePoint)(UIView *receiver);
+typedef CGPoint(^OCModeLayoutFixPoint)(UIView *receiver);
 
 typedef enum {
-    OCModeLayoutKeepTop = 1 << 0,
-    OCModeLayoutKeepLeft = 1 << 1,
-    OCModeLayoutKeepRight = 1 << 2,
-    OCModeLayoutKeepBottom = 1 << 3,
+    OCModeLayoutFixTop = 1 << 0,
+    OCModeLayoutFixLeft = 1 << 1,
+    OCModeLayoutFixRight = 1 << 2,
+    OCModeLayoutFixBottom = 1 << 3,
     
-    OCModeLayoutKeepTopLeft = OCModeLayoutKeepTop | OCModeLayoutKeepLeft,
-    OCModeLayoutKeepTopRight = OCModeLayoutKeepTop | OCModeLayoutKeepRight,
-    OCModeLayoutKeepBottomLeft = OCModeLayoutKeepBottom | OCModeLayoutKeepLeft,
-    OCModeLayoutKeepBottomRight = OCModeLayoutKeepBottom | OCModeLayoutKeepRight
-} OCModeLayoutKeepType;
+    OCModeLayoutFixTopLeft = OCModeLayoutFixTop | OCModeLayoutFixLeft,
+    OCModeLayoutFixTopRight = OCModeLayoutFixTop | OCModeLayoutFixRight,
+    OCModeLayoutFixBottomLeft = OCModeLayoutFixBottom | OCModeLayoutFixLeft,
+    OCModeLayoutFixBottomRight = OCModeLayoutFixBottom | OCModeLayoutFixRight
+} OCModeLayoutFixType;
 
 @interface OCModeLayoutSystem : NSObject <OCModeLayoutDelegate>
 
@@ -61,7 +61,8 @@ typedef enum {
 
 - (instancetype)addToView:(UIView *)view;
 - (instancetype)useToView:(UIView *)view;
-- (instancetype)keepView:(UIView *)view of:(OCModeLayoutKeepType)type to:(OCModeReferencePoint)block;
-- (instancetype)keepViews:(NSArray *)views of:(OCModeLayoutKeepType)type to:(OCModeReferencePoint)block;
+
+- (instancetype)fix:(OCModeLayoutFixType)type view:(UIView *)view to:(OCModeLayoutFixPoint)point;
+- (instancetype)fix:(OCModeLayoutFixType)type views:(NSArray *)views to:(OCModeLayoutFixPoint)point;
 
 @end

@@ -91,7 +91,7 @@ static void *RELATIONSHIPS_ASSOC_KEY;
     return self;
 }
 
-- (instancetype)keepView:(UIView *)view of:(OCModeLayoutKeepType)type to:(OCModeReferencePoint)block {
+- (instancetype)fix:(OCModeLayoutFixType)type view:(UIView *)view to:(OCModeLayoutFixPoint)point {
     static unsigned long priority = 0;
     ++priority;
     
@@ -102,38 +102,38 @@ static void *RELATIONSHIPS_ASSOC_KEY;
         objc_setAssociatedObject(view, RELATIONSHIPS_ASSOC_KEY, relationships, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
     
-    [block copy];
+    [point copy];
     
-    if (type & OCModeLayoutKeepTop) {
-        relationships[@(OCModeLayoutKeepTop)] = @{
-            @"view":view, @"of":@(OCModeLayoutKeepTop), @"to":block, @"priority":@(priority)
+    if (type & OCModeLayoutFixTop) {
+        relationships[@(OCModeLayoutFixTop)] = @{
+            @"view":view, @"of":@(OCModeLayoutFixTop), @"to":point, @"priority":@(priority)
         };
     }
     
-    if (type & OCModeLayoutKeepLeft) {
-        relationships[@(OCModeLayoutKeepLeft)] = @{
-            @"view":view, @"of":@(OCModeLayoutKeepLeft), @"to":block, @"priority":@(priority)
+    if (type & OCModeLayoutFixLeft) {
+        relationships[@(OCModeLayoutFixLeft)] = @{
+            @"view":view, @"of":@(OCModeLayoutFixLeft), @"to":point, @"priority":@(priority)
         };
     }
     
-    if (type & OCModeLayoutKeepRight) {
-        relationships[@(OCModeLayoutKeepRight)] = @{
-            @"view":view, @"of":@(OCModeLayoutKeepRight), @"to":block, @"priority":@(priority)
+    if (type & OCModeLayoutFixRight) {
+        relationships[@(OCModeLayoutFixRight)] = @{
+            @"view":view, @"of":@(OCModeLayoutFixRight), @"to":point, @"priority":@(priority)
         };
     }
     
-    if (type & OCModeLayoutKeepBottom) {
-        relationships[@(OCModeLayoutKeepBottom)] = @{
-            @"view":view, @"of":@(OCModeLayoutKeepBottom), @"to":block, @"priority":@(priority)
+    if (type & OCModeLayoutFixBottom) {
+        relationships[@(OCModeLayoutFixBottom)] = @{
+            @"view":view, @"of":@(OCModeLayoutFixBottom), @"to":point, @"priority":@(priority)
         };
     }
     
     return self;
 }
 
-- (instancetype)keepViews:(NSArray *)views of:(OCModeLayoutKeepType)type to:(OCModeReferencePoint)block {
+- (instancetype)fix:(OCModeLayoutFixType)type views:(NSArray *)views to:(OCModeLayoutFixPoint)point {
     for (UIView *view in views) {
-        [self keepView:view of:type to:block];
+        [self fix:type view:view to:point];
     }
     
     return self;
@@ -161,34 +161,34 @@ static void *RELATIONSHIPS_ASSOC_KEY;
     for (NSDictionary *relationship in allRelationships) {
         
         UIView *view = relationship[@"view"];
-        OCModeLayoutKeepType keepType = [relationship[@"of"] integerValue];
+        OCModeLayoutFixType keepType = [relationship[@"of"] integerValue];
         NSDictionary *relationships = objc_getAssociatedObject(view, RELATIONSHIPS_ASSOC_KEY);
         CGPoint referencePoint = ((CGPoint(^)(UIView *))relationship[@"to"])(receiver);
         
         switch (keepType) {
-            case OCModeLayoutKeepTop:
-                if (relationships[@(OCModeLayoutKeepBottom)]) {
+            case OCModeLayoutFixTop:
+                if (relationships[@(OCModeLayoutFixBottom)]) {
                     CGFloat height = view.bottom - referencePoint.y;
                     view.height = MAX(height, 0.0f);
                 }
                 view.top = referencePoint.y;
                 break;
-            case OCModeLayoutKeepLeft:
-                if (relationships[@(OCModeLayoutKeepRight)]) {
+            case OCModeLayoutFixLeft:
+                if (relationships[@(OCModeLayoutFixRight)]) {
                     CGFloat width = view.right - referencePoint.x;
                     view.width = MAX(width, 0.0f);
                 }
                 view.left = referencePoint.x;
                 break;
-            case OCModeLayoutKeepRight:
-                if (relationships[@(OCModeLayoutKeepLeft)]) {
+            case OCModeLayoutFixRight:
+                if (relationships[@(OCModeLayoutFixLeft)]) {
                     CGFloat width = referencePoint.x - view.left;
                     view.width = MAX(width, 0.0f);
                 }
                 view.right = referencePoint.x;
                 break;
-            case OCModeLayoutKeepBottom:
-                if (relationships[@(OCModeLayoutKeepTop)]){
+            case OCModeLayoutFixBottom:
+                if (relationships[@(OCModeLayoutFixTop)]){
                     CGFloat height = referencePoint.y - view.top;
                     view.height = MAX(height, 0.0f);
                 }
