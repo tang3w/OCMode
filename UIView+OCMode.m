@@ -230,24 +230,51 @@
     self.top = bottom - self.height;
 }
 
-- (CGFloat)rightToSuperView {
+- (CGFloat)rightToSuperview {
     return self.superview ? self.superview.width - self.right : 0.0f;
 }
 
-- (void)setRightToSuperView:(CGFloat)rightToSuperView {
+- (void)setRightToSuperview:(CGFloat)rightToSuperview {
     if (self.superview) {
-        self.right = self.superview.width - rightToSuperView;
+        self.right = self.superview.width - rightToSuperview;
     }
 }
 
-- (CGFloat)bottomToSuperView {
+- (CGFloat)bottomToSuperview {
     return self.superview ? self.superview.height - self.bottom : 0.0f;
 }
 
-- (void)setBottomToSuperView:(CGFloat)bottomToSuperView {
+- (void)setBottomToSuperview:(CGFloat)bottomToSuperview {
     if (self.superview) {
-        self.bottom = self.superview.height - bottomToSuperView;
+        self.bottom = self.superview.height - bottomToSuperview;
     }
+}
+
+- (CGPoint)topRight {
+    return CGPointMake(self.right, self.top);
+}
+
+- (void)setTopRight:(CGPoint)topRight {
+    self.top = topRight.y;
+    self.right = topRight.x;
+}
+
+- (CGPoint)bottomLeft {
+    return CGPointMake(self.left, self.bottom);
+}
+
+- (void)setBottomLeft:(CGPoint)bottomLeft {
+    self.bottom = bottomLeft.y;
+    self.left = bottomLeft.x;
+}
+
+- (CGPoint)bottomRight {
+    return CGPointMake(self.right, self.bottom);
+}
+
+- (void)setBottomRight:(CGPoint)bottomRight {
+    self.bottom = bottomRight.y;
+    self.right = bottomRight.x;
 }
 
 - (CGFloat)offsetX {
@@ -316,13 +343,33 @@
     return self;
 }
 
-- (instancetype)rightToSuper:(CGFloat)rightToSuperView {
-    self.rightToSuperView = rightToSuperView;
+- (instancetype)rightToSuperview:(CGFloat)rightToSuperview {
+    self.rightToSuperview = rightToSuperview;
     return self;
 }
 
-- (instancetype)bottomToSuper:(CGFloat)bottomToSuperView {
-    self.bottomToSuperView = bottomToSuperView;
+- (instancetype)bottomToSuperview:(CGFloat)bottomToSuperview {
+    self.bottomToSuperview = bottomToSuperview;
+    return self;
+}
+
+- (instancetype)topleft:(CGPoint)topleft {
+    self.topleft = topleft;
+    return self;
+}
+
+- (instancetype)topRight:(CGPoint)topRight {
+    self.topRight = topRight;
+    return self;
+}
+
+- (instancetype)bottomLeft:(CGPoint)bottomLeft {
+    self.bottomLeft = bottomLeft;
+    return self;
+}
+
+- (instancetype)bottomRight:(CGPoint)bottomRight {
+    self.bottomRight = bottomRight;
     return self;
 }
 

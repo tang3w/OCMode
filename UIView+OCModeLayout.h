@@ -38,3 +38,25 @@
 - (void)addLayoutSystem:(id<OCModeLayoutDelegate>)system;
 
 @end
+
+typedef CGPoint(^OCModeReferencePoint)(UIView *receiver);
+
+typedef enum {
+    OCModeLayoutKeepTop = 1 << 0,
+    OCModeLayoutKeepLeft = 1 << 1,
+    OCModeLayoutKeepRight = 1 << 2,
+    OCModeLayoutKeepBottom = 1 << 3,
+    
+    OCModeLayoutKeepTopLeft = OCModeLayoutKeepTop | OCModeLayoutKeepLeft,
+    OCModeLayoutKeepTopRight = OCModeLayoutKeepTop | OCModeLayoutKeepRight,
+    OCModeLayoutKeepBottomLeft = OCModeLayoutKeepBottom | OCModeLayoutKeepLeft,
+    OCModeLayoutKeepBottomRight = OCModeLayoutKeepBottom | OCModeLayoutKeepRight
+} OCModeLayoutKeepType;
+
+@interface OCModeLayoutSystem : NSObject <OCModeLayoutDelegate>
+
++ (id)layoutSystem;
+
+- (instancetype)keepView:(UIView *)view of:(OCModeLayoutKeepType)type to:(OCModeReferencePoint)block;
+
+@end
