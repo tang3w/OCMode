@@ -25,44 +25,38 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol OCModeLayoutDelegate <NSObject>
+enum OCModeLayoutBaselineType {
+    OCModeLayoutBaselineTop    = 1 << 1,
+    OCModeLayoutBaselineLeft   = 1 << 2,
+    OCModeLayoutBaselineRight  = 1 << 3,
+    OCModeLayoutBaselineBottom = 1 << 4,
+    OCModeLayoutBaselineAxisX  = 1 << 5,
+    OCModeLayoutBaselineAxisY  = 1 << 6
+};
 
-@required
-- (void)layoutSubviews:(UIView *)receiver;
+enum OCModeLayoutBasepointType {
+    OCModeLayoutBasepointTopLeft     = OCModeLayoutBaselineTop | OCModeLayoutBaselineLeft,
+    OCModeLayoutBasepointTopRight    = OCModeLayoutBaselineTop | OCModeLayoutBaselineRight,
+    OCModeLayoutBasepointBottomLeft  = OCModeLayoutBaselineBottom | OCModeLayoutBaselineLeft,
+    OCModeLayoutBasepointBottomRight = OCModeLayoutBaselineBottom | OCModeLayoutBaselineRight,
+    OCModeLayoutBasepointCenter      = OCModeLayoutBaselineAxisX | OCModeLayoutBaselineAxisY
+};
 
-@end
+typedef enum OCModeLayoutBaselineType OCModeLayoutBaselineType;
+typedef enum OCModeLayoutBasepointType OCModeLayoutBasepointType;
 
-@interface UIView (OCModeLayout)
+typedef CGFloat(^OCModeLayoutBaselineBlock)(UIView *receiver);
+typedef CGPoint(^OCModeLayoutBasepointBlock)(UIView *receiver);
 
-- (void)useLayoutSystem:(id<OCModeLayoutDelegate>)system;
-- (void)addLayoutSystem:(id<OCModeLayoutDelegate>)system;
-
-@end
-
-typedef CGPoint(^OCModeLayoutFixPoint)(UIView *receiver);
-
-typedef enum {
-    OCModeLayoutFixTop = 1 << 0,
-    OCModeLayoutFixLeft = 1 << 1,
-    OCModeLayoutFixRight = 1 << 2,
-    OCModeLayoutFixBottom = 1 << 3,
-    
-    OCModeLayoutFixTopLeft = OCModeLayoutFixTop | OCModeLayoutFixLeft,
-    OCModeLayoutFixTopRight = OCModeLayoutFixTop | OCModeLayoutFixRight,
-    OCModeLayoutFixBottomLeft = OCModeLayoutFixBottom | OCModeLayoutFixLeft,
-    OCModeLayoutFixBottomRight = OCModeLayoutFixBottom | OCModeLayoutFixRight
-} OCModeLayoutFixType;
-
-@interface OCModeLayoutSystem : NSObject <OCModeLayoutDelegate>
+@interface OCModeLayoutSystem : NSObject
 
 + (id)layoutSystem;
-+ (id)layoutSystemAddToView:(UIView *)view;
-+ (id)layoutSystemUseToView:(UIView *)view;
 
-- (instancetype)addToView:(UIView *)view;
-- (instancetype)useToView:(UIView *)view;
+- (instancetype)addTo:(UIView *)view;
+- (instancetype)useTo:(UIView *)view;
 
-- (instancetype)fix:(OCModeLayoutFixType)type view:(UIView *)view to:(OCModeLayoutFixPoint)point;
-- (instancetype)fix:(OCModeLayoutFixType)type views:(NSArray *)views to:(OCModeLayoutFixPoint)point;
+- (instancetype)fix:(UIView *)view baseline:(OCModeLayoutBaselineType)baseline to:(OCModeLayoutBaselineBlock)block;
+- (instancetype)fix:(UIView *)view basepoint:(OCModeLayoutBasepointType)basepoint at:(OCModeLayoutBasepointBlock)block;
+- (instancetype)fix:(UIView *)view, ...;
 
 @end

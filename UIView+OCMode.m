@@ -190,9 +190,9 @@
 }
 
 - (void)setX:(CGFloat)x {
-    CGRect rect = self.frame;
-    rect.origin.x = x;
-    self.frame = rect;
+    CGPoint center = self.center;
+    center.x = x + self.width / 2.0f;
+    self.center = center;
 }
 
 - (CGFloat)y {
@@ -200,9 +200,9 @@
 }
 
 - (void)setY:(CGFloat)y {
-    CGRect rect = self.frame;
-    rect.origin.y = y;
-    self.frame = rect;
+    CGPoint center = self.center;
+    center.y = y + self.height / 2.0f;
+    self.center = center;
 }
 
 - (CGPoint)origin {
