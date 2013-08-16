@@ -33,11 +33,11 @@
 @interface OCModeLayoutRule : NSObject
 
 @property (nonatomic, weak) UIView *view;
-@property (nonatomic, assign) OCModeLayoutBaselineType baseline;
-@property (nonatomic, copy) OCModeLayoutBaselineBlock block;
+@property (nonatomic, assign) OCModeBaselineType baseline;
+@property (nonatomic, copy) OCModeBaselineBlock block;
 @property (nonatomic, assign) unsigned long priority;
 
-- (id)initWithView:(UIView *)view baseline:(OCModeLayoutBaselineType)baseline block:(OCModeLayoutBaselineBlock)block;
+- (id)initWithView:(UIView *)view baseline:(OCModeBaselineType)baseline block:(OCModeBaselineBlock)block;
 - (BOOL)priorityHigherThan:(OCModeLayoutRule *)layoutRule;
 - (NSDictionary *)layoutTable;
 
@@ -58,7 +58,7 @@
 
 @implementation OCModeLayoutRule
 
-- (id)initWithView:(UIView *)view baseline:(OCModeLayoutBaselineType)baseline block:(OCModeLayoutBaselineBlock)block {
+- (id)initWithView:(UIView *)view baseline:(OCModeBaselineType)baseline block:(OCModeBaselineBlock)block {
     static unsigned long priority = 0;
     
     self = [super init];
@@ -115,25 +115,25 @@ static const void *LAYOUT_SCHEME_ASSOC_KEY;
 }
 
 - (void)addLayoutRule:(OCModeLayoutRule *)layoutRule {
-    OCModeLayoutBaselineType baseline = layoutRule.baseline;
+    OCModeBaselineType baseline = layoutRule.baseline;
     
     self.layoutTable[@(baseline)] = layoutRule;
     
     [self checkConflictForBaseline:baseline];
 }
 
-- (void)checkConflictForBaseline:(OCModeLayoutBaselineType)baseline {
+- (void)checkConflictForBaseline:(OCModeBaselineType)baseline {
     switch (baseline) {
-        case OCModeLayoutBaselineTop:
-        case OCModeLayoutBaselineAxisY:
-        case OCModeLayoutBaselineBottom: {
-            [self deleteLowestBaselines:OCModeLayoutBaselineTop, OCModeLayoutBaselineAxisY, OCModeLayoutBaselineBottom, NO];
+        case OCModeBaselineTop:
+        case OCModeBaselineAxisY:
+        case OCModeBaselineBottom: {
+            [self deleteLowestBaselines:OCModeBaselineTop, OCModeBaselineAxisY, OCModeBaselineBottom, NO];
         }
             break;
-        case OCModeLayoutBaselineLeft:
-        case OCModeLayoutBaselineAxisX:
-        case OCModeLayoutBaselineRight: {
-            [self deleteLowestBaselines:OCModeLayoutBaselineLeft, OCModeLayoutBaselineAxisX, OCModeLayoutBaselineRight, NO];
+        case OCModeBaselineLeft:
+        case OCModeBaselineAxisX:
+        case OCModeBaselineRight: {
+            [self deleteLowestBaselines:OCModeBaselineLeft, OCModeBaselineAxisX, OCModeBaselineRight, NO];
         }
             break;
             
@@ -142,7 +142,7 @@ static const void *LAYOUT_SCHEME_ASSOC_KEY;
     }
 }
 
-- (void)deleteLowestBaselines:(OCModeLayoutBaselineType)baseline, ... {
+- (void)deleteLowestBaselines:(OCModeBaselineType)baseline, ... {
     OCModeLayoutRule *lowestLayoutRule = self.layoutTable[@(baseline)];
     
     if (!lowestLayoutRule) {
@@ -152,7 +152,7 @@ static const void *LAYOUT_SCHEME_ASSOC_KEY;
     va_list args;
     va_start(args, baseline);
     
-    while ((baseline = va_arg(args, OCModeLayoutBaselineType))) {
+    while ((baseline = va_arg(args, OCModeBaselineType))) {
         OCModeLayoutRule *layoutRule = self.layoutTable[@(baseline)];
         
         if (!layoutRule) {
@@ -171,15 +171,15 @@ static const void *LAYOUT_SCHEME_ASSOC_KEY;
 
 @end
 
-#pragma mark - OCModeLayoutSystem
+#pragma mark - OCModeLayout
 
-static const void *LAYOUT_SYSTEM_ASSOC_KEY;
+static const void *LAYOUT_ASSOC_KEY;
 
-@implementation OCModeLayoutSystem {
+@implementation OCModeLayout {
     __weak UIView *_layoutView;
 }
 
-+ (id)layoutSystem {
++ (id)layout {
     return [[self alloc] init];
 }
 
@@ -187,9 +187,9 @@ static const void *LAYOUT_SYSTEM_ASSOC_KEY;
     if (!_layoutView) {
         _layoutView = view;
         
-        __weak OCModeLayoutSystem *that = self;
+        __weak OCModeLayout *that = self;
         
-        objc_setAssociatedObject(view, LAYOUT_SYSTEM_ASSOC_KEY, self, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        objc_setAssociatedObject(view, LAYOUT_ASSOC_KEY, self, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         
         [Eigen eigenInstance:view handler:^(id instance, Eigen *eigen) {
             SEL sel = @selector(layoutSubviews);
@@ -220,9 +220,9 @@ static const void *LAYOUT_SYSTEM_ASSOC_KEY;
     if (!_layoutView) {
         _layoutView = view;
         
-        __weak OCModeLayoutSystem *that = self;
+        __weak OCModeLayout *that = self;
         
-        objc_setAssociatedObject(view, LAYOUT_SYSTEM_ASSOC_KEY, self, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        objc_setAssociatedObject(view, LAYOUT_ASSOC_KEY, self, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         
         [Eigen eigenInstance:view handler:^(id instance, Eigen *eigen) {
             [eigen addMethod:@selector(layoutSubviews) byBlock:^(UIView *receiver) {
@@ -236,7 +236,7 @@ static const void *LAYOUT_SYSTEM_ASSOC_KEY;
     return self;
 }
 
-- (instancetype)fix:(UIView *)view baseline:(OCModeLayoutBaselineType)baseline to:(OCModeLayoutBaselineBlock)block {
+- (instancetype)fix:(UIView *)view baseline:(OCModeBaselineType)baseline to:(OCModeBaselineBlock)block {
     OCModeLayoutScheme *layoutScheme = [OCModeLayoutScheme layoutSchemeWithView:view];
     OCModeLayoutRule *layoutRule = [[OCModeLayoutRule alloc] initWithView:view baseline:baseline block:block];
     
@@ -245,36 +245,36 @@ static const void *LAYOUT_SYSTEM_ASSOC_KEY;
     return self;
 }
 
-- (instancetype)fix:(UIView *)view basepoint:(OCModeLayoutBasepointType)basepoint at:(OCModeLayoutBasepointBlock)block {
+- (instancetype)fix:(UIView *)view basepoint:(OCModeBasepointType)basepoint at:(OCModeBasepointBlock)block {
     OCModeLayoutScheme *layoutScheme = [OCModeLayoutScheme layoutSchemeWithView:view];
     
-    OCModeLayoutBaselineBlock blockX = ^CGFloat(UIView *reciever){ return block(reciever).x; };
-    OCModeLayoutBaselineBlock blockY = ^CGFloat(UIView *reciever){ return block(reciever).y; };
+    OCModeBaselineBlock blockX = ^CGFloat(UIView *reciever){ return block(reciever).x; };
+    OCModeBaselineBlock blockY = ^CGFloat(UIView *reciever){ return block(reciever).y; };
     
     switch (basepoint) {
-        case OCModeLayoutBasepointTopLeft: {
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineTop block:blockY]];
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineLeft block:blockX]];
+        case OCModeBasepointTopLeft: {
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineTop block:blockY]];
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineLeft block:blockX]];
         }
             break;
-        case OCModeLayoutBasepointTopRight: {
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineTop block:blockY]];
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineRight block:blockX]];
+        case OCModeBasepointTopRight: {
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineTop block:blockY]];
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineRight block:blockX]];
         }
             break;
-        case OCModeLayoutBasepointBottomLeft: {
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineBottom block:blockY]];
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineLeft block:blockX]];
+        case OCModeBasepointBottomLeft: {
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineBottom block:blockY]];
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineLeft block:blockX]];
         }
             break;
-        case OCModeLayoutBasepointBottomRight: {
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineBottom block:blockY]];
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineRight block:blockX]];
+        case OCModeBasepointBottomRight: {
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineBottom block:blockY]];
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineRight block:blockX]];
         }
             break;
-        case OCModeLayoutBasepointCenter: {
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineAxisX block:blockX]];
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineAxisY block:blockY]];
+        case OCModeBasepointCenter: {
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineAxisX block:blockX]];
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineAxisY block:blockY]];
         }
             
         default:
@@ -310,16 +310,16 @@ static const void *LAYOUT_SYSTEM_ASSOC_KEY;
     NSDictionary *layoutTable = [layoutRule layoutTable];
     
     switch (layoutRule.baseline) {
-        case OCModeLayoutBaselineTop: {
+        case OCModeBaselineTop: {
             CGFloat top = layoutRule.block(layoutView);
-            OCModeLayoutRule *axisYRule = layoutTable[@(OCModeLayoutBaselineAxisY)];
+            OCModeLayoutRule *axisYRule = layoutTable[@(OCModeBaselineAxisY)];
             
             if (axisYRule && [layoutRule priorityHigherThan:axisYRule]) {
                 CGFloat axisY = axisYRule.block(layoutView);
                 CGFloat height = 2 * (axisY - top);
                 view.height = MAX(height, 0.0f);
             } else {
-                OCModeLayoutRule *bottomRule = layoutTable[@(OCModeLayoutBaselineBottom)];
+                OCModeLayoutRule *bottomRule = layoutTable[@(OCModeBaselineBottom)];
                 
                 if (bottomRule && [layoutRule priorityHigherThan:bottomRule]) {
                     CGFloat bottom = bottomRule.block(layoutView);
@@ -331,16 +331,16 @@ static const void *LAYOUT_SYSTEM_ASSOC_KEY;
             view.top = top;
         }
             break;
-        case OCModeLayoutBaselineLeft: {
+        case OCModeBaselineLeft: {
             CGFloat left = layoutRule.block(layoutView);
-            OCModeLayoutRule *axisXRule = layoutTable[@(OCModeLayoutBaselineAxisX)];
+            OCModeLayoutRule *axisXRule = layoutTable[@(OCModeBaselineAxisX)];
             
             if (axisXRule && [layoutRule priorityHigherThan:axisXRule]) {
                 CGFloat axisX = axisXRule.block(layoutView);
                 CGFloat width = 2 * (axisX - left);
                 view.width = MAX(width, 0.0f);
             } else {
-                OCModeLayoutRule *rightRule = layoutTable[@(OCModeLayoutBaselineRight)];
+                OCModeLayoutRule *rightRule = layoutTable[@(OCModeBaselineRight)];
                 
                 if (rightRule && [layoutRule priorityHigherThan:rightRule]) {
                     CGFloat right = rightRule.block(layoutView);
@@ -352,16 +352,16 @@ static const void *LAYOUT_SYSTEM_ASSOC_KEY;
             view.left = left;
         }
             break;
-        case OCModeLayoutBaselineRight: {
+        case OCModeBaselineRight: {
             CGFloat right = layoutRule.block(layoutView);
-            OCModeLayoutRule *axisXRule = layoutTable[@(OCModeLayoutBaselineAxisX)];
+            OCModeLayoutRule *axisXRule = layoutTable[@(OCModeBaselineAxisX)];
             
             if (axisXRule && [layoutRule priorityHigherThan:axisXRule]) {
                 CGFloat axisX = axisXRule.block(layoutView);
                 CGFloat width = 2 * (right - axisX);
                 view.width = MAX(width, 0.0f);
             } else {
-                OCModeLayoutRule *leftRule = layoutTable[@(OCModeLayoutBaselineLeft)];
+                OCModeLayoutRule *leftRule = layoutTable[@(OCModeBaselineLeft)];
                 
                 if (leftRule && [layoutRule priorityHigherThan:leftRule]) {
                     CGFloat left = leftRule.block(layoutView);
@@ -373,16 +373,16 @@ static const void *LAYOUT_SYSTEM_ASSOC_KEY;
             view.right = right;
         }
             break;
-        case OCModeLayoutBaselineBottom: {
+        case OCModeBaselineBottom: {
             CGFloat bottom = layoutRule.block(layoutView);
-            OCModeLayoutRule *axisYRule = layoutTable[@(OCModeLayoutBaselineAxisY)];
+            OCModeLayoutRule *axisYRule = layoutTable[@(OCModeBaselineAxisY)];
             
             if (axisYRule && [layoutRule priorityHigherThan:axisYRule]) {
                 CGFloat axisY = axisYRule.block(layoutView);
                 CGFloat height = 2 * (bottom - axisY);
                 view.height = MAX(height, 0.0f);
             } else {
-                OCModeLayoutRule *topRule = layoutTable[@(OCModeLayoutBaselineTop)];
+                OCModeLayoutRule *topRule = layoutTable[@(OCModeBaselineTop)];
                 
                 if (topRule && [layoutRule priorityHigherThan:topRule]) {
                     CGFloat top = topRule.block(layoutView);
@@ -394,16 +394,16 @@ static const void *LAYOUT_SYSTEM_ASSOC_KEY;
             view.bottom = bottom;
         }
             break;
-        case OCModeLayoutBaselineAxisX: {
+        case OCModeBaselineAxisX: {
             CGFloat axisX = layoutRule.block(layoutView);
-            OCModeLayoutRule *leftRule = layoutTable[@(OCModeLayoutBaselineLeft)];
+            OCModeLayoutRule *leftRule = layoutTable[@(OCModeBaselineLeft)];
             
             if (leftRule && [layoutRule priorityHigherThan:leftRule]) {
                 CGFloat left = leftRule.block(layoutView);
                 CGFloat width = 2 * (axisX - left);
                 view.width = MAX(width, 0.0f);
             } else {
-                OCModeLayoutRule *rightRule = layoutTable[@(OCModeLayoutBaselineRight)];
+                OCModeLayoutRule *rightRule = layoutTable[@(OCModeBaselineRight)];
                 
                 if (rightRule && [layoutRule priorityHigherThan:rightRule]) {
                     CGFloat right = rightRule.block(layoutView);
@@ -415,16 +415,16 @@ static const void *LAYOUT_SYSTEM_ASSOC_KEY;
             view.centerX = axisX;
         }
             break;
-        case OCModeLayoutBaselineAxisY: {
+        case OCModeBaselineAxisY: {
             CGFloat axisY = layoutRule.block(layoutView);
-            OCModeLayoutRule *topRule = layoutTable[@(OCModeLayoutBaselineTop)];
+            OCModeLayoutRule *topRule = layoutTable[@(OCModeBaselineTop)];
             
             if (topRule && [layoutRule priorityHigherThan:topRule]) {
                 CGFloat top = topRule.block(layoutView);
                 CGFloat height = 2 * (axisY - top);
                 view.height = MAX(height, 0.0f);
             } else {
-                OCModeLayoutRule *bottomRule = layoutTable[@(OCModeLayoutBaselineBottom)];
+                OCModeLayoutRule *bottomRule = layoutTable[@(OCModeBaselineBottom)];
                 
                 if (bottomRule && [layoutRule priorityHigherThan:bottomRule]) {
                     CGFloat bottom = bottomRule.block(layoutView);

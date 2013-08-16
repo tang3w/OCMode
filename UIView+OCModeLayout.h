@@ -25,37 +25,37 @@
 
 #import <UIKit/UIKit.h>
 
-enum OCModeLayoutBaselineType {
-    OCModeLayoutBaselineTop    = 1 << 1,
-    OCModeLayoutBaselineLeft   = 1 << 2,
-    OCModeLayoutBaselineRight  = 1 << 3,
-    OCModeLayoutBaselineBottom = 1 << 4,
-    OCModeLayoutBaselineAxisX  = 1 << 5,
-    OCModeLayoutBaselineAxisY  = 1 << 6
+enum OCModeBaselineType {
+    OCModeBaselineTop    = 1 << 1,
+    OCModeBaselineLeft   = 1 << 2,
+    OCModeBaselineRight  = 1 << 3,
+    OCModeBaselineBottom = 1 << 4,
+    OCModeBaselineAxisX  = 1 << 5,
+    OCModeBaselineAxisY  = 1 << 6
 };
 
-enum OCModeLayoutBasepointType {
-    OCModeLayoutBasepointTopLeft     = OCModeLayoutBaselineTop | OCModeLayoutBaselineLeft,
-    OCModeLayoutBasepointTopRight    = OCModeLayoutBaselineTop | OCModeLayoutBaselineRight,
-    OCModeLayoutBasepointBottomLeft  = OCModeLayoutBaselineBottom | OCModeLayoutBaselineLeft,
-    OCModeLayoutBasepointBottomRight = OCModeLayoutBaselineBottom | OCModeLayoutBaselineRight,
-    OCModeLayoutBasepointCenter      = OCModeLayoutBaselineAxisX | OCModeLayoutBaselineAxisY
+enum OCModeBasepointType {
+    OCModeBasepointTopLeft     = OCModeBaselineTop | OCModeBaselineLeft,
+    OCModeBasepointTopRight    = OCModeBaselineTop | OCModeBaselineRight,
+    OCModeBasepointBottomLeft  = OCModeBaselineBottom | OCModeBaselineLeft,
+    OCModeBasepointBottomRight = OCModeBaselineBottom | OCModeBaselineRight,
+    OCModeBasepointCenter      = OCModeBaselineAxisX | OCModeBaselineAxisY
 };
 
-typedef enum OCModeLayoutBaselineType OCModeLayoutBaselineType;
-typedef enum OCModeLayoutBasepointType OCModeLayoutBasepointType;
+typedef enum OCModeBaselineType OCModeBaselineType;
+typedef enum OCModeBasepointType OCModeBasepointType;
 
-typedef CGFloat(^OCModeLayoutBaselineBlock)(UIView *receiver);
-typedef CGPoint(^OCModeLayoutBasepointBlock)(UIView *receiver);
+typedef CGFloat(^OCModeBaselineBlock)(UIView *receiver);
+typedef CGPoint(^OCModeBasepointBlock)(UIView *receiver);
 
-@interface OCModeLayoutSystem : NSObject
+@interface OCModeLayout : NSObject
 
-+ (id)layoutSystem;
++ (id)layout;
 
 - (instancetype)addTo:(UIView *)view;
 - (instancetype)useTo:(UIView *)view;
 
-- (instancetype)fix:(UIView *)view baseline:(OCModeLayoutBaselineType)baseline to:(OCModeLayoutBaselineBlock)block;
-- (instancetype)fix:(UIView *)view basepoint:(OCModeLayoutBasepointType)basepoint at:(OCModeLayoutBasepointBlock)block;
+- (instancetype)fix:(UIView *)view baseline:(OCModeBaselineType)baseline to:(OCModeBaselineBlock)block;
+- (instancetype)fix:(UIView *)view basepoint:(OCModeBasepointType)basepoint at:(OCModeBasepointBlock)block;
 
 @end
