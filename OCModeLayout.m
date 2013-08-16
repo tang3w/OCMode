@@ -194,16 +194,10 @@ static const void *LAYOUT_ASSOC_KEY;
         [Eigen eigenInstance:view handler:^(id instance, Eigen *eigen) {
             SEL sel = @selector(layoutSubviews);
             void(^superBlock)(id) = [eigen superBlock:sel];
-            __weak Eigen *localEigen = eigen;
             
             [eigen addMethod:@selector(layoutSubviews) byBlock:^(id receiver) {
                 if (superBlock) {
                     superBlock(receiver);
-                } else {
-                    IMP imp = [localEigen superImplementation:sel];
-                    if (imp != NULL) {
-                        imp(receiver, sel);
-                    }
                 }
                 
                 [that layoutSubviews:receiver];
