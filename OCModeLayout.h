@@ -26,20 +26,20 @@
 #import <UIKit/UIKit.h>
 
 enum OCModeBaselineType {
-    OCModeBaselineTop    = 1 << 1,
-    OCModeBaselineLeft   = 1 << 2,
-    OCModeBaselineRight  = 1 << 3,
-    OCModeBaselineBottom = 1 << 4,
-    OCModeBaselineAxisX  = 1 << 5,
-    OCModeBaselineAxisY  = 1 << 6
+    OCModeBaselineTop = 1,
+    OCModeBaselineLeft,
+    OCModeBaselineRight,
+    OCModeBaselineBottom,
+    OCModeBaselineAxisX,
+    OCModeBaselineAxisY
 };
 
 enum OCModeBasepointType {
-    OCModeBasepointTopLeft     = OCModeBaselineTop | OCModeBaselineLeft,
-    OCModeBasepointTopRight    = OCModeBaselineTop | OCModeBaselineRight,
-    OCModeBasepointBottomLeft  = OCModeBaselineBottom | OCModeBaselineLeft,
-    OCModeBasepointBottomRight = OCModeBaselineBottom | OCModeBaselineRight,
-    OCModeBasepointAxis        = OCModeBaselineAxisX | OCModeBaselineAxisY
+    OCModeBasepointTopLeft = 1,
+    OCModeBasepointTopRight,
+    OCModeBasepointBottomLeft,
+    OCModeBasepointBottomRight,
+    OCModeBasepointAxis
 };
 
 typedef enum OCModeBaselineType OCModeBaselineType;
