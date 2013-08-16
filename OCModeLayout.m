@@ -284,6 +284,18 @@ static const void *LAYOUT_ASSOC_KEY;
     return self;
 }
 
+- (instancetype)fix:(UIView *)view baseline:(OCModeBaselineType)baseline be:(CGFloat)value {
+    // TODO
+    
+    return self;
+}
+
+- (instancetype)fix:(UIView *)view basepoint:(OCModeBasepointType)basepoint be:(CGPoint)point {
+    // TODO
+    
+    return self;
+}
+
 - (void)layoutSubviews:(UIView *)receiver {
     NSMutableArray *layoutRules = [[NSMutableArray alloc] init];
     
