@@ -230,6 +230,12 @@ static const void *LAYOUT_ASSOC_KEY;
     return self;
 }
 
+- (instancetype)fix:(UIView *)view baseline:(OCModeBaselineType)baseline be:(CGFloat)value {
+    [self fix:view baseline:baseline to:^CGFloat(UIView *receiver) { return value; }];
+    
+    return self;
+}
+
 - (instancetype)fix:(UIView *)view baseline:(OCModeBaselineType)baseline to:(OCModeBaselineBlock)block {
     OCModeLayoutScheme *layoutScheme = [OCModeLayoutScheme layoutSchemeWithView:view];
     OCModeLayoutRule *layoutRule = [[OCModeLayoutRule alloc] initWithView:view baseline:baseline block:block];
@@ -239,7 +245,13 @@ static const void *LAYOUT_ASSOC_KEY;
     return self;
 }
 
-- (instancetype)fix:(UIView *)view basepoint:(OCModeBasepointType)basepoint at:(OCModeBasepointBlock)block {
+- (instancetype)fix:(UIView *)view basepoint:(OCModeBasepointType)basepoint be:(CGPoint)point {
+    [self fix:view basepoint:basepoint to:^CGPoint(UIView *receiver) { return point; }];
+    
+    return self;
+}
+
+- (instancetype)fix:(UIView *)view basepoint:(OCModeBasepointType)basepoint to:(OCModeBasepointBlock)block {
     OCModeLayoutScheme *layoutScheme = [OCModeLayoutScheme layoutSchemeWithView:view];
     
     OCModeBaselineBlock blockX = ^CGFloat(UIView *reciever){ return block(reciever).x; };
@@ -266,7 +278,7 @@ static const void *LAYOUT_ASSOC_KEY;
             [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineRight block:blockX]];
         }
             break;
-        case OCModeBasepointCenter: {
+        case OCModeBasepointAxis: {
             [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineAxisX block:blockX]];
             [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineAxisY block:blockY]];
         }
@@ -278,14 +290,133 @@ static const void *LAYOUT_ASSOC_KEY;
     return self;
 }
 
-- (instancetype)fix:(UIView *)view baseline:(OCModeBaselineType)baseline be:(CGFloat)value {
-    // TODO
+- (instancetype)fixTop:(UIView *)view be:(CGFloat)value {
+    [self fix:view baseline:OCModeBaselineTop be:value];
     
     return self;
 }
 
-- (instancetype)fix:(UIView *)view basepoint:(OCModeBasepointType)basepoint be:(CGPoint)point {
-    // TODO
+- (instancetype)fixLeft:(UIView *)view be:(CGFloat)value {
+    [self fix:view baseline:OCModeBaselineLeft be:value];
+    
+    return self;
+}
+
+- (instancetype)fixRight:(UIView *)view be:(CGFloat)value {
+    [self fix:view baseline:OCModeBaselineRight be:value];
+    
+    return self;
+}
+
+- (instancetype)fixBottom:(UIView *)view be:(CGFloat)value {
+    [self fix:view baseline:OCModeBaselineBottom be:value];
+    
+    return self;
+}
+
+- (instancetype)fixAxisX:(UIView *)view be:(CGFloat)value {
+    [self fix:view baseline:OCModeBaselineAxisX be:value];
+    
+    return self;
+}
+
+- (instancetype)fixAxisY:(UIView *)view be:(CGFloat)value {
+    [self fix:view baseline:OCModeBaselineAxisY be:value];
+    
+    return self;
+}
+
+- (instancetype)fixTop:(UIView *)view to:(OCModeBaselineBlock)block {
+    [self fix:view baseline:OCModeBaselineTop to:block];
+    
+    return self;
+}
+
+- (instancetype)fixLeft:(UIView *)view to:(OCModeBaselineBlock)block {
+    [self fix:view baseline:OCModeBaselineLeft to:block];
+    
+    return self;
+}
+
+- (instancetype)fixRight:(UIView *)view to:(OCModeBaselineBlock)block {
+    [self fix:view baseline:OCModeBaselineRight to:block];
+    
+    return self;
+}
+
+- (instancetype)fixBottom:(UIView *)view to:(OCModeBaselineBlock)block {
+    [self fix:view baseline:OCModeBaselineBottom to:block];
+    
+    return self;
+}
+
+- (instancetype)fixAxisX:(UIView *)view to:(OCModeBaselineBlock)block {
+    [self fix:view baseline:OCModeBaselineAxisX to:block];
+    
+    return self;
+}
+
+- (instancetype)fixAxisY:(UIView *)view to:(OCModeBaselineBlock)block {
+    [self fix:view baseline:OCModeBaselineAxisY to:block];
+    
+    return self;
+}
+
+- (instancetype)fixTopLeft:(UIView *)view be:(CGPoint)point {
+    [self fix:view basepoint:OCModeBasepointTopLeft be:point];
+    
+    return self;
+}
+
+- (instancetype)fixTopRight:(UIView *)view be:(CGPoint)point {
+    [self fix:view basepoint:OCModeBasepointTopRight be:point];
+    
+    return self;
+}
+
+- (instancetype)fixBottomLeft:(UIView *)view be:(CGPoint)point {
+    [self fix:view basepoint:OCModeBasepointBottomLeft be:point];
+    
+    return self;
+}
+
+- (instancetype)fixBottomRight:(UIView *)view be:(CGPoint)point {
+    [self fix:view basepoint:OCModeBasepointBottomRight be:point];
+    
+    return self;
+}
+
+- (instancetype)fixAxis:(UIView *)view be:(CGPoint)point {
+    [self fix:view basepoint:OCModeBasepointAxis be:point];
+    
+    return self;
+}
+
+- (instancetype)fixTopLeft:(UIView *)view to:(OCModeBasepointBlock)block {
+    [self fix:view basepoint:OCModeBasepointTopLeft to:block];
+    
+    return self;
+}
+
+- (instancetype)fixTopRight:(UIView *)view to:(OCModeBasepointBlock)block {
+    [self fix:view basepoint:OCModeBasepointTopRight to:block];
+    
+    return self;
+}
+
+- (instancetype)fixBottomLeft:(UIView *)view to:(OCModeBasepointBlock)block {
+    [self fix:view basepoint:OCModeBasepointBottomLeft to:block];
+    
+    return self;
+}
+
+- (instancetype)fixBottomRight:(UIView *)view to:(OCModeBasepointBlock)block {
+    [self fix:view basepoint:OCModeBasepointBottomRight to:block];
+    return self;
+}
+
+- (instancetype)fixAxis:(UIView *)view to:(OCModeBasepointBlock)block {
+    [self fix:view basepoint:OCModeBasepointAxis to:block];
     
     return self;
 }
