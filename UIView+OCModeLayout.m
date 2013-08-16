@@ -191,8 +191,21 @@ static const void *LAYOUT_SYSTEM_ASSOC_KEY;
         
         objc_setAssociatedObject(view, LAYOUT_SYSTEM_ASSOC_KEY, self, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         
-        [Eigen eigenInstance:view handler:^(id instance, Eigen *eigenclass) {
-            [eigenclass addMethod:@selector(layoutSubviews) byBlock:^(UIView *receiver) {
+        [Eigen eigenInstance:view handler:^(id instance, Eigen *eigen) {
+            SEL sel = @selector(layoutSubviews);
+            void(^superBlock)(id) = [eigen superBlock:sel];
+            __weak Eigen *localEigen = eigen;
+            
+            [eigen addMethod:@selector(layoutSubviews) byBlock:^(id receiver) {
+                if (superBlock) {
+                    superBlock(receiver);
+                } else {
+                    IMP imp = [localEigen superImplementation:sel];
+                    if (imp != NULL) {
+                        imp(receiver, sel);
+                    }
+                }
+                
                 [that layoutSubviews:receiver];
             }];
         }];
@@ -211,15 +224,8 @@ static const void *LAYOUT_SYSTEM_ASSOC_KEY;
         
         objc_setAssociatedObject(view, LAYOUT_SYSTEM_ASSOC_KEY, self, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         
-        [Eigen eigenInstance:view handler:^(id instance, Eigen *eigenclass) {
-            SEL sel = @selector(layoutSubviews);
-            void(^superBlock)(id) = [eigenclass superBlock:sel];
-            
-            [eigenclass addMethod:@selector(layoutSubviews) byBlock:^(id receiver) {
-                if (superBlock) {
-                    superBlock(receiver);
-                }
-                
+        [Eigen eigenInstance:view handler:^(id instance, Eigen *eigen) {
+            [eigen addMethod:@selector(layoutSubviews) byBlock:^(UIView *receiver) {
                 [that layoutSubviews:receiver];
             }];
         }];
@@ -242,70 +248,38 @@ static const void *LAYOUT_SYSTEM_ASSOC_KEY;
 - (instancetype)fix:(UIView *)view basepoint:(OCModeLayoutBasepointType)basepoint at:(OCModeLayoutBasepointBlock)block {
     OCModeLayoutScheme *layoutScheme = [OCModeLayoutScheme layoutSchemeWithView:view];
     
+    OCModeLayoutBaselineBlock blockX = ^CGFloat(UIView *reciever){ return block(reciever).x; };
+    OCModeLayoutBaselineBlock blockY = ^CGFloat(UIView *reciever){ return block(reciever).y; };
+    
     switch (basepoint) {
         case OCModeLayoutBasepointTopLeft: {
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineTop block:^CGFloat(UIView *reciever){ return block(reciever).y; }]];
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineLeft block:^CGFloat(UIView *reciever){ return block(reciever).x; }]];
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineTop block:blockY]];
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineLeft block:blockX]];
         }
             break;
         case OCModeLayoutBasepointTopRight: {
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineTop block:^CGFloat(UIView *reciever){ return block(reciever).y; }]];
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineRight block:^CGFloat(UIView *reciever){ return block(reciever).x; }]];
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineTop block:blockY]];
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineRight block:blockX]];
         }
             break;
         case OCModeLayoutBasepointBottomLeft: {
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineBottom block:^CGFloat(UIView *reciever){ return block(reciever).y; }]];
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineLeft block:^CGFloat(UIView *reciever){ return block(reciever).x; }]];
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineBottom block:blockY]];
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineLeft block:blockX]];
         }
             break;
         case OCModeLayoutBasepointBottomRight: {
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineBottom block:^CGFloat(UIView *reciever){ return block(reciever).y; }]];
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineRight block:^CGFloat(UIView *reciever){ return block(reciever).x; }]];
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineBottom block:blockY]];
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineRight block:blockX]];
         }
             break;
         case OCModeLayoutBasepointCenter: {
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineAxisX block:^CGFloat(UIView *reciever){ return block(reciever).x; }]];
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineAxisY block:^CGFloat(UIView *reciever){ return block(reciever).y; }]];
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineAxisX block:blockX]];
+            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeLayoutBaselineAxisY block:blockY]];
         }
             
         default:
             break;
     }
-    
-    return self;
-}
-
-- (instancetype)fix:(UIView *)view, ... {
-    va_list args;
-    va_start(args, view);
-    
-    NSInteger base = va_arg(args, NSInteger);
-    id block = va_arg(args, id);
-    
-    switch (base) {
-        case OCModeLayoutBaselineTop:
-        case OCModeLayoutBaselineLeft:
-        case OCModeLayoutBaselineRight:
-        case OCModeLayoutBaselineBottom:
-        case OCModeLayoutBaselineAxisX:
-        case OCModeLayoutBaselineAxisY: {
-            [self fix:view baseline:base to:block];
-        }
-            break;
-        case OCModeLayoutBasepointTopLeft:
-        case OCModeLayoutBasepointTopRight:
-        case OCModeLayoutBasepointBottomLeft:
-        case OCModeLayoutBasepointBottomRight:
-        case OCModeLayoutBasepointCenter: {
-            [self fix:view basepoint:base at:block];
-        }
-            break;
-            
-        default:
-            break;
-    }
-    
-    va_end(args);
     
     return self;
 }

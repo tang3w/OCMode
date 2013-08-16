@@ -57,6 +57,5 @@ typedef CGPoint(^OCModeLayoutBasepointBlock)(UIView *receiver);
 
 - (instancetype)fix:(UIView *)view baseline:(OCModeLayoutBaselineType)baseline to:(OCModeLayoutBaselineBlock)block;
 - (instancetype)fix:(UIView *)view basepoint:(OCModeLayoutBasepointType)basepoint at:(OCModeLayoutBasepointBlock)block;
-- (instancetype)fix:(UIView *)view, ...;
 
 @end
