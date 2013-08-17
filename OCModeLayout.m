@@ -179,10 +179,6 @@ static const void *LAYOUT_ASSOC_KEY;
     __weak UIView *_layoutView;
 }
 
-+ (id)layout {
-    return [[self alloc] init];
-}
-
 - (instancetype)addTo:(UIView *)view {
     if (!_layoutView) {
         _layoutView = view;
@@ -230,13 +226,7 @@ static const void *LAYOUT_ASSOC_KEY;
     return self;
 }
 
-- (instancetype)fix:(UIView *)view baseline:(OCModeBaselineType)baseline be:(CGFloat)value {
-    [self fix:view baseline:baseline to:^CGFloat(UIView *receiver) { return value; }];
-    
-    return self;
-}
-
-- (instancetype)fix:(UIView *)view baseline:(OCModeBaselineType)baseline to:(OCModeBaselineBlock)block {
+- (instancetype)align:(UIView *)view baseline:(OCModeBaselineType)baseline to:(OCModeBaselineBlock)block {
     OCModeLayoutScheme *layoutScheme = [OCModeLayoutScheme layoutSchemeWithView:view];
     OCModeLayoutRule *layoutRule = [[OCModeLayoutRule alloc] initWithView:view baseline:baseline block:block];
     
@@ -245,47 +235,59 @@ static const void *LAYOUT_ASSOC_KEY;
     return self;
 }
 
-- (instancetype)fix:(UIView *)view basepoint:(OCModeBasepointType)basepoint be:(CGPoint)point {
-    [self fix:view basepoint:basepoint to:^CGPoint(UIView *receiver) { return point; }];
-    
-    return self;
-}
-
-- (instancetype)fix:(UIView *)view basepoint:(OCModeBasepointType)basepoint to:(OCModeBasepointBlock)block {
+- (instancetype)align:(UIView *)view basepoint:(OCModeBasepointType)basepoint to:(OCModeBasepointBlock)block {
     OCModeLayoutScheme *layoutScheme = [OCModeLayoutScheme layoutSchemeWithView:view];
     
     OCModeBaselineBlock blockX = ^CGFloat(UIView *reciever){ return block(reciever).x; };
     OCModeBaselineBlock blockY = ^CGFloat(UIView *reciever){ return block(reciever).y; };
     
+    OCModeLayoutRule *ruleX = [[OCModeLayoutRule alloc] initWithView:view baseline:0 block:blockX];
+    OCModeLayoutRule *ruleY = [[OCModeLayoutRule alloc] initWithView:view baseline:0 block:blockY];
+    
     switch (basepoint) {
         case OCModeBasepointTopLeft: {
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineTop block:blockY]];
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineLeft block:blockX]];
+            ruleY.baseline = OCModeBaselineTop;
+            ruleX.baseline = OCModeBaselineLeft;
         }
             break;
         case OCModeBasepointTopRight: {
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineTop block:blockY]];
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineRight block:blockX]];
+            ruleY.baseline = OCModeBaselineTop;
+            ruleX.baseline = OCModeBaselineRight;
         }
             break;
         case OCModeBasepointBottomLeft: {
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineBottom block:blockY]];
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineLeft block:blockX]];
+            ruleY.baseline = OCModeBaselineBottom;
+            ruleX.baseline = OCModeBaselineLeft;
         }
             break;
         case OCModeBasepointBottomRight: {
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineBottom block:blockY]];
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineRight block:blockX]];
+            ruleY.baseline = OCModeBaselineBottom;
+            ruleX.baseline = OCModeBaselineRight;
         }
             break;
         case OCModeBasepointAxis: {
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineAxisX block:blockX]];
-            [layoutScheme addLayoutRule:[[OCModeLayoutRule alloc] initWithView:view baseline:OCModeBaselineAxisY block:blockY]];
+            ruleY.baseline = OCModeBaselineAxisY;
+            ruleX.baseline = OCModeBaselineAxisX;
         }
             
         default:
             break;
     }
+    
+    [layoutScheme addLayoutRule:ruleX];
+    [layoutScheme addLayoutRule:ruleY];
+
+    return self;
+}
+
+- (instancetype)align:(UIView *)view baseline:(OCModeBaselineType)baseline be:(CGFloat)value {
+    [self align:view baseline:baseline to:^CGFloat(UIView *receiver) { return value; }];
+    
+    return self;
+}
+
+- (instancetype)align:(UIView *)view basepoint:(OCModeBasepointType)basepoint be:(CGPoint)point {
+    [self align:view basepoint:basepoint to:^CGPoint(UIView *receiver) { return point; }];
     
     return self;
 }

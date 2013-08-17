@@ -35,7 +35,7 @@ enum OCModeBaselineType {
 };
 
 enum OCModeBasepointType {
-    OCModeBasepointTopLeft = 1,
+    OCModeBasepointTopLeft,
     OCModeBasepointTopRight,
     OCModeBasepointBottomLeft,
     OCModeBasepointBottomRight,
@@ -50,15 +50,13 @@ typedef CGPoint(^OCModeBasepointBlock)(UIView *receiver);
 
 @interface OCModeLayout : NSObject
 
-+ (id)layout;
-
 - (instancetype)addTo:(UIView *)view;
 - (instancetype)useTo:(UIView *)view;
 
-- (instancetype)fix:(UIView *)view baseline:(OCModeBaselineType)baseline be:(CGFloat)value;
-- (instancetype)fix:(UIView *)view baseline:(OCModeBaselineType)baseline to:(OCModeBaselineBlock)block;
+- (instancetype)align:(UIView *)view baseline:(OCModeBaselineType)baseline to:(OCModeBaselineBlock)block;
+- (instancetype)align:(UIView *)view basepoint:(OCModeBasepointType)basepoint to:(OCModeBasepointBlock)block;
 
-- (instancetype)fix:(UIView *)view basepoint:(OCModeBasepointType)basepoint be:(CGPoint)point;
-- (instancetype)fix:(UIView *)view basepoint:(OCModeBasepointType)basepoint to:(OCModeBasepointBlock)block;
+- (instancetype)align:(UIView *)view baseline:(OCModeBaselineType)baseline be:(CGFloat)value;
+- (instancetype)align:(UIView *)view basepoint:(OCModeBasepointType)basepoint be:(CGPoint)point;
 
 @end
