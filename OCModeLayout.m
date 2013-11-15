@@ -188,12 +188,19 @@ static const void *LAYOUT_ASSOC_KEY;
         objc_setAssociatedObject(view, LAYOUT_ASSOC_KEY, self, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         
         [Eigen eigenInstance:view handler:^(id instance, Eigen *eigen) {
-            SEL sel = @selector(layoutSubviews);
-            void(^superBlock)(id) = [eigen superBlock:sel];
+            SEL cmd = @selector(layoutSubviews);
+            void(^superblock)(id) = [eigen superblock:cmd];
+            Class superklass = [eigen superklass];
             
-            [eigen addMethod:@selector(layoutSubviews) byBlock:^(id receiver) {
-                if (superBlock) {
-                    superBlock(receiver);
+            [eigen addMethod:cmd byBlock:^(id receiver) {
+                if (superblock) {
+                    superblock(receiver);
+                } else {
+                    void (*imp)(id, SEL) = (void (*)(id, SEL))class_getMethodImplementation(superklass, cmd);
+                    
+                    if (imp != NULL) {
+                        imp(receiver, cmd);
+                    }
                 }
                 
                 [that layoutSubviews:receiver];
