@@ -179,6 +179,10 @@ static const void *LAYOUT_ASSOC_KEY;
     __weak UIView *_layoutView;
 }
 
++ (instancetype)layout {
+    return [[self alloc] init];
+}
+
 - (instancetype)addTo:(UIView *)view {
     if (!_layoutView) {
         _layoutView = view;

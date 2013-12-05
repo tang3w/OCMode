@@ -50,6 +50,8 @@ typedef CGPoint(^OCModeBasepointBlock)(UIView *receiver);
 
 @interface OCModeLayout : NSObject
 
++ (instancetype)layout;
+
 - (instancetype)addTo:(UIView *)view;
 - (instancetype)useTo:(UIView *)view;
 
