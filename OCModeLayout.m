@@ -25,7 +25,6 @@
 
 #import "OCModeLayout.h"
 #import <objc/runtime.h>
-#import "UIView+OCMode.h"
 #import "Eigen.h"
 
 @class OCModeLayoutScheme;
@@ -337,138 +336,144 @@ static const void *LAYOUT_ASSOC_KEY;
 
 - (void)layoutView:(UIView *)layoutView layoutRule:(OCModeLayoutRule *)layoutRule {
     UIView *view = layoutRule.view;
+    CGRect oldFrame = view.frame;
+    CGRect newFrame = oldFrame;
     NSDictionary *layoutTable = [layoutRule layoutTable];
     
     switch (layoutRule.baseline) {
     case OCModeBaselineTop: {
         CGFloat top = layoutRule.block(layoutView);
+        newFrame.origin.y = top;
+        
         OCModeLayoutRule *axisYRule = layoutTable[@(OCModeBaselineAxisY)];
         
         if (axisYRule && [layoutRule priorityHigherThan:axisYRule]) {
             CGFloat axisY = axisYRule.block(layoutView);
             CGFloat height = 2 * (axisY - top);
-            view.height = MAX(height, 0.0f);
+            newFrame.size.height = MAX(height, 0.0f);
         } else {
             OCModeLayoutRule *bottomRule = layoutTable[@(OCModeBaselineBottom)];
             
             if (bottomRule && [layoutRule priorityHigherThan:bottomRule]) {
                 CGFloat bottom = bottomRule.block(layoutView);
                 CGFloat height = bottom - top;
-                view.height = MAX(height, 0.0f);
+                newFrame.size.height = MAX(height, 0.0f);
             }
         }
-        
-        view.top = top;
     }
         break;
     case OCModeBaselineLeft: {
         CGFloat left = layoutRule.block(layoutView);
+        newFrame.origin.x = left;
+        
         OCModeLayoutRule *axisXRule = layoutTable[@(OCModeBaselineAxisX)];
         
         if (axisXRule && [layoutRule priorityHigherThan:axisXRule]) {
             CGFloat axisX = axisXRule.block(layoutView);
             CGFloat width = 2 * (axisX - left);
-            view.width = MAX(width, 0.0f);
+            newFrame.size.width = MAX(width, 0.0f);
         } else {
             OCModeLayoutRule *rightRule = layoutTable[@(OCModeBaselineRight)];
             
             if (rightRule && [layoutRule priorityHigherThan:rightRule]) {
                 CGFloat right = rightRule.block(layoutView);
                 CGFloat width = right - left;
-                view.width = MAX(width, 0.0f);
+                newFrame.size.width = MAX(width, 0.0f);
             }
         }
-        
-        view.left = left;
     }
         break;
     case OCModeBaselineRight: {
         CGFloat right = layoutRule.block(layoutView);
+        newFrame.origin.x = right - oldFrame.size.width;
+        
         OCModeLayoutRule *axisXRule = layoutTable[@(OCModeBaselineAxisX)];
         
         if (axisXRule && [layoutRule priorityHigherThan:axisXRule]) {
             CGFloat axisX = axisXRule.block(layoutView);
             CGFloat width = 2 * (right - axisX);
-            view.width = MAX(width, 0.0f);
+            newFrame.size.width = MAX(width, 0.0f);
         } else {
             OCModeLayoutRule *leftRule = layoutTable[@(OCModeBaselineLeft)];
             
             if (leftRule && [layoutRule priorityHigherThan:leftRule]) {
                 CGFloat left = leftRule.block(layoutView);
                 CGFloat width = right - left;
-                view.width = MAX(width, 0.0f);
+                newFrame.size.width = MAX(width, 0.0f);
             }
         }
-        
-        view.right = right;
     }
         break;
     case OCModeBaselineBottom: {
         CGFloat bottom = layoutRule.block(layoutView);
+        newFrame.origin.y = bottom - oldFrame.size.height;
+        
         OCModeLayoutRule *axisYRule = layoutTable[@(OCModeBaselineAxisY)];
         
         if (axisYRule && [layoutRule priorityHigherThan:axisYRule]) {
             CGFloat axisY = axisYRule.block(layoutView);
             CGFloat height = 2 * (bottom - axisY);
-            view.height = MAX(height, 0.0f);
+            newFrame.size.height = MAX(height, 0.0f);
         } else {
             OCModeLayoutRule *topRule = layoutTable[@(OCModeBaselineTop)];
             
             if (topRule && [layoutRule priorityHigherThan:topRule]) {
                 CGFloat top = topRule.block(layoutView);
                 CGFloat height = bottom - top;
-                view.height = MAX(height, 0.0f);
+                newFrame.size.height = MAX(height, 0.0f);
             }
         }
-        
-        view.bottom = bottom;
     }
         break;
     case OCModeBaselineAxisX: {
         CGFloat axisX = layoutRule.block(layoutView);
+        newFrame.origin.x = axisX - oldFrame.size.width / 2.0f;
+        
         OCModeLayoutRule *leftRule = layoutTable[@(OCModeBaselineLeft)];
         
         if (leftRule && [layoutRule priorityHigherThan:leftRule]) {
             CGFloat left = leftRule.block(layoutView);
             CGFloat width = 2 * (axisX - left);
-            view.width = MAX(width, 0.0f);
+            newFrame.size.width = MAX(width, 0.0f);
         } else {
             OCModeLayoutRule *rightRule = layoutTable[@(OCModeBaselineRight)];
             
             if (rightRule && [layoutRule priorityHigherThan:rightRule]) {
                 CGFloat right = rightRule.block(layoutView);
                 CGFloat width = 2 * (right - axisX);
-                view.width = MAX(width, 0.0f);
+                newFrame.size.width = MAX(width, 0.0f);
             }
         }
-        
-        view.centerX = axisX;
     }
         break;
     case OCModeBaselineAxisY: {
         CGFloat axisY = layoutRule.block(layoutView);
+        newFrame.origin.y = axisY - oldFrame.size.height / 2.0f;
+        
         OCModeLayoutRule *topRule = layoutTable[@(OCModeBaselineTop)];
         
         if (topRule && [layoutRule priorityHigherThan:topRule]) {
             CGFloat top = topRule.block(layoutView);
             CGFloat height = 2 * (axisY - top);
-            view.height = MAX(height, 0.0f);
+            newFrame.size.height = MAX(height, 0.0f);
         } else {
             OCModeLayoutRule *bottomRule = layoutTable[@(OCModeBaselineBottom)];
             
             if (bottomRule && [layoutRule priorityHigherThan:bottomRule]) {
                 CGFloat bottom = bottomRule.block(layoutView);
                 CGFloat height = 2 * (bottom - axisY);
-                view.height = MAX(height, 0.0f);
+                newFrame.size.height = MAX(height, 0.0f);
             }
         }
-        
-        view.centerY = axisY;
     }
         break;
         
     default:
         break;
+    }
+    
+    if (!CGRectEqualToRect(newFrame, oldFrame)) {
+        view.frame = newFrame;
     }
 }
 
